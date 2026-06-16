@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/edisatc-logo.png";
 
 // Gradiente do fundo extraído do Figma (vertical, de cima para baixo)
@@ -6,6 +7,7 @@ const BG_GRADIENT =
   "linear-gradient(180deg, #DCFF7C 0%, #80CC71 12%, #15685A 85%, #14565D 98%)";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
@@ -13,6 +15,8 @@ export default function LoginPage() {
     e.preventDefault();
     // TODO: integrar com a API de autenticação
     console.log("login", { email, senha });
+    // Após autenticar, vai para o painel de editais
+    navigate("/dashboard");
   }
 
   return (
@@ -99,12 +103,12 @@ export default function LoginPage() {
         {/* Rodapé */}
         <footer className="text-center mt-10 text-sm text-gray-500">
           Não possui login?{" "}
-          <a
-            href="#"
+          <Link
+            to="/cadastro"
             className="font-semibold text-[#2F2F2F] underline underline-offset-2 hover:text-[#348953]"
           >
             Faça já seu cadastro
-          </a>
+          </Link>
         </footer>
       </main>
     </div>
