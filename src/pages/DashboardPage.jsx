@@ -7,7 +7,7 @@ const BG_GRADIENT =
 
 const POR_PAGINA = 9;
 
-const FONTES = ["FAPESC", "CAPES"];
+const FONTES = ["FAPESC"];
 
 function parseData(valor) {
   if (!valor || valor === "--") return null;

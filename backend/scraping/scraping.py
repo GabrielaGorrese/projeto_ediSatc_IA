@@ -139,7 +139,7 @@ def scrapingFAPESC(editaisCadastrados):
                 print(f"Erro ao acessar edital: {e}")
                 continue
 
-        print("\n✅ | Coleta de editais FAPESC concluída com sucesso!")
+        print("\nColeta de editais FAPESC concluída com sucesso!")
         return resultadosFAPESC, erratasFAPESC
 
     except WebDriverException as e:

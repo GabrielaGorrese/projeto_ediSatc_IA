@@ -34,7 +34,7 @@ def executar_pipeline(fontes=None):
             print(f"Fonte desconhecida, ignorando: {fonte}")
             continue
         coletado = scraper(cadastrados)
-        # alguns coletores podem retornar None em caso de falha grave
+
         if not coletado:
             continue
         res, err = coletado

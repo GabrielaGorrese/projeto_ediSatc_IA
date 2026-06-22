@@ -1,0 +1,153 @@
+================================================================
+TECNOLOGIAS DO PROJETO - Sistema Inteligente de Analise de Editais
+O que sao, por que foram usadas e onde
+================================================================
+
+
+----------------------------------------------------------------
+FRONTEND (interface que o usuario ve)
+----------------------------------------------------------------
+
+React 18
+  O que e : Biblioteca JavaScript para construir interfaces por componentes.
+  Por que : Permite montar a tela em pedacos reutilizaveis (cards, listas) e
+            atualizar a tela sozinha quando os dados mudam (estado).
+  Onde    : Todas as telas em src/pages/
+
+React Router 7
+  O que e : Sistema de rotas (navegacao).
+  Por que : Troca de tela (login -> cadastro -> dashboard -> detalhe) sem
+            recarregar a pagina.
+  Onde    : src/main.jsx e os Link/rotas nas paginas
+
+Vite 5
+  O que e : Servidor de desenvolvimento + empacotador (build).
+  Por que : Roda o front em dev (npm run dev) com recarga instantanea e gera a
+            versao final (npm run build).
+  Onde    : vite.config.js, package.json
+
+Tailwind CSS 4
+  O que e : Framework de estilo via classes utilitarias.
+  Por que : Estilizar direto no JSX (className="rounded-md border...") sem
+            escrever CSS separado.
+  Onde    : Em todo o DashboardPage.jsx e demais paginas
+
+Fetch API
+  O que e : Funcao nativa do navegador para chamadas HTTP.
+  Por que : Conversar com o backend (buscar editais, login, disparar pipeline).
+  Onde    : src/api/client.js
+
+
+----------------------------------------------------------------
+BACKEND (cerebro / API)
+----------------------------------------------------------------
+
+Python 3.12+
+  O que e : Linguagem do backend.
+  Por que : Ecossistema forte de scraping, IA e bibliotecas de dados.
+  Onde    : Tudo em backend/
+
+FastAPI
+  O que e : Framework web para criar APIs REST.
+  Por que : Cria os endpoints (/editais, /login...) com validacao e documentacao
+            automatica em /docs.
+  Onde    : backend/api/servidor.py
+
+Uvicorn
+  O que e : Servidor ASGI que roda o FastAPI.
+  Por que : E quem realmente "liga" a API na porta 8000.
+  Onde    : comando uvicorn api.servidor:app
+
+Pydantic
+  O que e : Validacao de dados por modelos.
+  Por que : Garante que o que chega na API (ex: email/senha) tem o formato certo.
+  Onde    : classe CredenciaisUsuario em backend/api/servidor.py
+
+
+----------------------------------------------------------------
+COLETA E IA (o coracao do projeto)
+----------------------------------------------------------------
+
+Selenium
+  O que e : Automacao de navegador (controla o Chrome).
+  Por que : Sites como o da FAPESC carregam conteudo via JavaScript; precisa de um
+            navegador real para ler o HTML.
+  Onde    : backend/scraping/scraping.py
+
+PyPDF2
+  O que e : Leitor de PDF em Python.
+  Por que : Extrai o texto do PDF do edital para mandar para a IA.
+  Onde    : backend/resumo/resumoGemini.py
+
+google-generativeai (Google Gemini)
+  O que e : SDK do modelo generativo do Google.
+  Por que : Tecnica de IA principal: resume e classifica o edital em JSON
+            estruturado.
+  Onde    : backend/resumo/resumoGemini.py
+
+Ollama (opcional)
+  O que e : Roda modelos de IA localmente.
+  Por que : Alternativa offline ao Gemini, sem custo de API.
+  Onde    : funcao analisar_edital_pdf_ollama em backend/resumo/resumoGemini.py
+
+requests
+  O que e : Biblioteca de requisicoes HTTP.
+  Por que : Baixa o PDF do edital e chama a API do Ollama.
+  Onde    : backend/resumo/resumoGemini.py
+
+re (regex)
+  O que e : Busca de padroes em texto (modulo nativo do Python).
+  Por que : Extrai datas (dd/mm/aaaa) dos prazos durante o scraping.
+  Onde    : backend/scraping/scraping.py
+
+
+----------------------------------------------------------------
+DADOS E SEGURANCA
+----------------------------------------------------------------
+
+PostgreSQL
+  O que e : Banco de dados relacional.
+  Por que : Armazena editais, resumos e usuarios.
+  Onde    : backend/banco/schema.sql
+
+psycopg
+  O que e : Driver Python <-> PostgreSQL.
+  Por que : Conecta e executa as queries no banco.
+  Onde    : backend/banco/conexao.py, backend/banco/repositorio.py
+
+hashlib + secrets
+  O que e : Modulos nativos de criptografia do Python.
+  Por que : Guarda a senha como hash PBKDF2-SHA256 (nunca em texto puro) com salt
+            aleatorio.
+  Onde    : backend/auth.py
+
+python-dotenv
+  O que e : Le variaveis do arquivo .env.
+  Por que : Mantem segredos (chave do Gemini, senha do banco) fora do codigo.
+  Onde    : backend/config.py
+
+
+----------------------------------------------------------------
+INTEGRACAO OPCIONAL
+----------------------------------------------------------------
+
+gspread + google-auth
+  O que e : Cliente de Google Sheets + autenticacao Google.
+  Por que : Espelhar os editais numa planilha Google (ligado por
+            GRAVAR_SHEETS=true).
+  Onde    : backend/planilha/
+
+
+----------------------------------------------------------------
+FLUXO RESUMIDO COM AS TECNOLOGIAS
+----------------------------------------------------------------
+
+Selenium le o site FAPESC
+  -> requests baixa o PDF
+  -> PyPDF2 extrai o texto
+  -> Gemini resume em JSON
+  -> psycopg salva no PostgreSQL
+  -> FastAPI (Uvicorn) entrega via API
+  -> React (fetch) mostra na tela
+
+================================================================
