@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/edisatc-logo.png";
 
-// Mesmo gradiente de fundo do Figma usado na tela de login
 const BG_GRADIENT =
   "linear-gradient(180deg, #DCFF7C 0%, #80CC71 12%, #15685A 85%, #14565D 98%)";
 
@@ -11,7 +10,7 @@ const inputClass =
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nome: "", email: "", senha: "" });
+  const [form, setForm] = useState({ email: "", senha: "" });
 
   function update(campo) {
     return (e) => setForm((f) => ({ ...f, [campo]: e.target.value }));
@@ -19,9 +18,7 @@ export default function RegisterPage() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    // TODO: integrar com a API de cadastro
-    console.log("cadastro", form);
-    // Após o cadastro, segue para a seleção de áreas de interesse
+    sessionStorage.setItem("cadastro", JSON.stringify(form));
     navigate("/areas-interesse");
   }
 
@@ -31,7 +28,6 @@ export default function RegisterPage() {
       style={{ background: BG_GRADIENT }}
     >
       <main className="w-full max-w-5xl bg-white rounded-xl shadow-2xl px-6 py-10 sm:px-14 sm:py-12">
-        {/* Cabeçalho */}
         <header className="text-center mb-10">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#2F2F2F]">
             Cadastro
@@ -41,9 +37,7 @@ export default function RegisterPage() {
           </p>
         </header>
 
-        {/* Conteúdo: logo | divisória | formulário */}
         <div className="flex flex-col md:flex-row items-stretch gap-10 md:gap-0">
-          {/* Logo */}
           <div className="flex-1 flex items-center justify-center md:pr-12">
             <img
               src={logo}
@@ -53,29 +47,10 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Divisória vertical (somente desktop) */}
           <div className="hidden md:block w-px bg-[#CCCCCC]" />
 
-          {/* Formulário */}
           <div className="flex-1 w-full md:pl-12 flex items-center">
             <form onSubmit={handleSubmit} className="w-full space-y-5">
-              <div>
-                <label
-                  htmlFor="nome"
-                  className="block font-semibold text-[#2F2F2F] mb-2"
-                >
-                  Nome completo
-                </label>
-                <input
-                  id="nome"
-                  type="text"
-                  value={form.nome}
-                  onChange={update("nome")}
-                  placeholder="Digite seu nome"
-                  className={inputClass}
-                />
-              </div>
-
               <div>
                 <label
                   htmlFor="email"
@@ -89,6 +64,7 @@ export default function RegisterPage() {
                   value={form.email}
                   onChange={update("email")}
                   placeholder="Digite seu e-mail"
+                  required
                   className={inputClass}
                 />
               </div>
@@ -106,6 +82,7 @@ export default function RegisterPage() {
                   value={form.senha}
                   onChange={update("senha")}
                   placeholder="Digite sua senha"
+                  required
                   className={inputClass}
                 />
               </div>
@@ -123,7 +100,6 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Voltar para login (não consta no Figma, mas mantém a navegação utilizável) */}
         <footer className="text-center mt-10 text-sm text-gray-500">
           Já possui uma conta?{" "}
           <Link
