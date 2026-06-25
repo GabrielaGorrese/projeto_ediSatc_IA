@@ -12,6 +12,8 @@ from banco import repositorio
 from pipeline import executar_pipeline
 from auth import gerar_hash, verificar_senha
 
+from datetime import date
+
 app = FastAPI(title="API Editais PD&I")
 
 # Libera o front-end a chamar a API (CORS). Em produção, restrinja os domínios.
@@ -22,6 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/teste")
+def teste():
+    return {"ok": True}
 
 @app.get("/editais")
 def listar_editais(tag: List[str] = Query(default=[])):
@@ -86,6 +91,76 @@ def login_usuario(credenciais: CredenciaisUsuario):
             raise HTTPException(
                 status_code=401, detail="Credenciais inválidas.")
         return {"id": usuario["id"], "email": usuario["email"], "tag": usuario["tag"]}
+    finally:
+        conn.close()
+
+
+class NovoProjeto(BaseModel):
+    nome: str
+    descricao: str = ""
+    data: date
+    edital_id: int
+    usuario_id: int
+
+class AtualizarProjeto(BaseModel):
+    nome: str
+    descricao: str = ""
+    data: date
+
+
+@app.post("/projetos")
+def criar_projeto(projeto: NovoProjeto):
+    conn = conectar()
+    try:
+        if repositorio.buscar_edital(conn, projeto.edital_id) is None:
+            raise HTTPException(status_code=404, detail="Edital não encontrado")
+        novo_id = repositorio.inserir_projeto(conn, projeto.dict())
+        return {"id": novo_id, **projeto.dict()}
+    finally:
+        conn.close()
+
+
+@app.get("/projetos")
+def listar_projetos(usuario_id: int = Query(None), edital_id: int = Query(None)):
+    conn = conectar()
+    try:
+        return repositorio.listar_projetos(conn, usuario_id, edital_id)
+    finally:
+        conn.close()
+
+
+@app.get("/projetos/{projeto_id}")
+def detalhar_projeto(projeto_id: int):
+    conn = conectar()
+    try:
+        projeto = repositorio.buscar_projeto(conn, projeto_id)
+        if projeto is None:
+            raise HTTPException(status_code=404, detail="Projeto não encontrado")
+        return projeto
+    finally:
+        conn.close()
+
+
+@app.put("/projetos/{projeto_id}")
+def atualizar_projeto(projeto_id: int, projeto: AtualizarProjeto):
+    conn = conectar()
+    try:
+        atualizado_id = repositorio.atualizar_projeto(conn, projeto_id, projeto.dict())
+        if atualizado_id is None:
+            raise HTTPException(status_code=404, detail="Projeto não encontrado")
+        return {"id": projeto_id, **projeto.dict()}
+    finally:
+        conn.close()
+
+
+@app.delete("/projetos/{projeto_id}")
+def deletar_projeto(projeto_id: int):
+    conn = conectar()
+    try:
+        removido_id = repositorio.remover_projeto(conn, projeto_id)
+        if removido_id is None:
+            raise HTTPException(status_code=404, detail="Projeto não encontrado")
+        return {"mensagem": "Projeto removido"}
     finally:
         conn.close()
 

@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../api/client.js";
+import EditalCard, { parseData, statusEdital, CategoriaTag } from "../components/EditalCard.jsx";
+import SideBar from "../components/SideBar.jsx";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
 const BG_GRADIENT =
   "linear-gradient(180deg, #DCFF7C 0%, #80CC71 12%, #15685A 85%, #14565D 98%)";
@@ -8,27 +11,6 @@ const BG_GRADIENT =
 const POR_PAGINA = 9;
 
 const FONTES = ["FAPESC"];
-
-function parseData(valor) {
-  if (!valor || valor === "--") return null;
-  const m = String(valor).match(/(\d{2})\/(\d{2})\/(\d{4})/);
-  if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
-  const d = new Date(valor);
-  return isNaN(d) ? null : d;
-}
-
-function formatarData(valor) {
-  const d = parseData(valor);
-  return d ? d.toLocaleDateString("pt-BR") : "—";
-}
-
-function statusEdital(prazoFinal) {
-  const d = parseData(prazoFinal);
-  if (!d) return "Sem prazo";
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  return d >= hoje ? "A vencer" : "Vencido";
-}
 
 function SortIcon() {
   return (
@@ -83,14 +65,6 @@ function ChevronUpDown({ dir }) {
   );
 }
 
-function CategoriaTag({ children }) {
-  return (
-    <span className="inline-block rounded border border-[#4DB577] bg-[#C0E5BA]/25 px-3 py-1 text-xs font-bold tracking-wide text-[#348953]">
-      {children}
-    </span>
-  );
-}
-
 function FiltroBotao({ icon, children, ativo = false, sufixo, onClick, className = "" }) {
   return (
     <button
@@ -128,50 +102,6 @@ function RecomendadoCard({ id, titulo, tags }) {
   );
 }
 
-function EditalCard({ edital, novo = false }) {
-  const status = statusEdital(edital.prazo_final);
-  return (
-    <Link
-      to={`/edital/${edital.id}`}
-      className={
-        "flex flex-col rounded-2xl border bg-white p-5 transition hover:border-[#348953] hover:shadow-md " +
-        (novo ? "border-[#348953] ring-2 ring-[#348953]/30" : "border-[#B1B1B1]")
-      }
-    >
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-2 text-sm text-[#313B31]">
-          <span
-            className={
-              "h-2.5 w-2.5 rounded-full " +
-              (status === "A vencer" ? "bg-[#FFA500]" : status === "Vencido" ? "bg-red-400" : "bg-gray-400")
-            }
-          />
-          {status}
-          {novo && (
-            <span className="rounded-full bg-[#348953] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-              Novo
-            </span>
-          )}
-        </span>
-        <span className="rounded bg-[#E4D317]/20 px-2.5 py-1 text-sm font-semibold text-[#A8802B]">
-          {formatarData(edital.prazo_final)}
-        </span>
-      </div>
-
-      <div className="mt-3 h-0.5 rounded bg-[#FFA500]" />
-
-      <h3 className="mt-4 font-bold leading-snug text-[#2C382D]">{edital.titulo}</h3>
-      <p className="mt-3 text-sm leading-relaxed text-gray-500 line-clamp-3">
-        {edital.objetivo_principal || "—"}
-      </p>
-
-      <div className="mt-auto pt-5">
-        {edital.tag && <CategoriaTag>{edital.tag}</CategoriaTag>}
-      </div>
-    </Link>
-  );
-}
-
 export default function DashboardPage() {
   const [editais, setEditais] = useState([]);
   const [recomendados, setRecomendados] = useState([]);
@@ -197,18 +127,25 @@ export default function DashboardPage() {
       : null;
 
   function carregarEditais() {
-    setCarregando(true);
-    Promise.all([
-      apiFetch("/editais"),
-      tagParams ? apiFetch(`/editais${tagParams}`) : Promise.resolve([]),
-    ])
-      .then(([todos, porTag]) => {
-        setEditais(todos);
-        setRecomendados(porTag.slice(0, 2));
-      })
-      .catch(() => {})
-      .finally(() => setCarregando(false));
-  }
+  setCarregando(true);
+  Promise.all([
+    apiFetch("/editais"),
+    tagParams ? apiFetch(`/editais${tagParams}`) : Promise.resolve([]),
+  ])
+    .then(([todos, porTag]) => {
+      console.log("todos:", todos);
+      console.log("porTag:", porTag);
+      setEditais(todos);
+      setRecomendados(porTag.slice(0, 2));
+    })
+    .catch((err) => {
+      console.error("Erro ao carregar editais:", err);
+    })
+    .finally(() => {
+      console.log("finally executado -> setCarregando(false)");
+      setCarregando(false);
+    });
+}
 
   useEffect(() => {
     carregarEditais();
@@ -292,22 +229,30 @@ export default function DashboardPage() {
   const temFiltro = ordemPrazo || ordemOrg || filtroStatus;
 
   return (
-    <div className="min-h-screen w-full p-4 sm:p-8" style={{ background: BG_GRADIENT }}>
-      <main className="mx-auto w-full max-w-6xl rounded-xl bg-white px-6 py-6 shadow-2xl sm:px-10 sm:py-8">
-        <div className="flex items-center justify-end border-b border-[#CCCCCC] pb-4">
+    <div className="flex h-screen overflow-hidden" style={{ background: '#fff' }}>
+      <SideBar className="h-full flex-shrink-0"/>
+      <main className="flex-1 overflow-y-auto mx-auto w-full max-w-8xl rounded-xl bg-white px-6 py-6 sm:px-10 sm:py-8">
+        <div className="flex items-center gap-20 border-b mb-8 border-[#CCCCCC] pb-4">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Pesquisar..."
+              className="w-full rounded-md border border-[#D3D3D3] bg-white py-2 pl-9 pr-4 text-sm text-[#2C382D] outline-none transition focus:border-[#348953] focus:ring-2 focus:ring-[#348953]/30"
+            />
+          </div>
+
           <button
             type="button"
             aria-label="Perfil"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E3E6EA] transition hover:bg-[#d6dade]"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E3E6EA] transition hover:bg-[#d6dade]"
           >
             <UserIcon />
           </button>
+
         </div>
 
-        <h1 className="mt-8 text-2xl font-bold text-[#2C382D] sm:text-3xl">
-          Olá, {nomeExibido}!
-        </h1>
-
+        {/*
         {recomendados.length > 0 && (
           <section className="mt-6 rounded-xl border border-[#CCCCCC] bg-[#FCFCFC] p-6">
             <h2 className="flex items-center gap-2 text-xl font-bold text-[#2C382D]">
@@ -323,8 +268,8 @@ export default function DashboardPage() {
             </div>
           </section>
         )}
-
         <div className="my-8 border-t border-[#CCCCCC]" />
+        */}
 
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-2xl font-bold text-[#2C382D]">Editais abertos</h2>

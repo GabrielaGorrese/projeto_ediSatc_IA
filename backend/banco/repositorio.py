@@ -135,3 +135,84 @@ def buscar_usuario(conn, email):
     with conn.cursor(row_factory=dict_row) as cur:
         cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
         return cur.fetchone()
+    
+    
+def inserir_projeto(conn, projeto):
+    sql = """
+        INSERT INTO projetos(
+            nome, descricao, data, edital_id, usuario_id, criado_em
+        ) VALUES(
+            %(nome)s, %(descricao)s, %(data)s, %(edital_id)s, %(usuario_id)s, NOW()
+        )
+        RETURNING id;
+    """
+    params = {
+        "nome": projeto["nome"],
+        "descricao": projeto.get("descricao"),
+        "data": projeto.get("data"),
+        "edital_id": projeto["edital_id"],
+        "usuario_id": projeto["usuario_id"],
+    }
+    with conn.cursor() as cur:
+        cur.execute(sql, params)
+        linha = cur.fetchone()
+    conn.commit()
+    return linha[0] if linha else None
+
+
+def listar_projetos(conn, usuario_id=None, edital_id=None):
+    sql = "SELECT * FROM projetos WHERE 1=1"
+    params = {}
+    if usuario_id is not None:
+        sql += " AND usuario_id = %(usuario_id)s"
+        params["usuario_id"] = usuario_id
+    if edital_id is not None:
+        sql += " AND edital_id = %(edital_id)s"
+        params["edital_id"] = edital_id
+    sql += " ORDER BY criado_em DESC;"
+
+    with conn.cursor() as cur:
+        cur.execute(sql, params)
+        colunas = [desc[0] for desc in cur.description]
+        linhas = cur.fetchall()
+    return [dict(zip(colunas, linha)) for linha in linhas]
+
+
+def buscar_projeto(conn, projeto_id):
+    sql = "SELECT * FROM projetos WHERE id = %(id)s;"
+    with conn.cursor() as cur:
+        cur.execute(sql, {"id": projeto_id})
+        colunas = [desc[0] for desc in cur.description]
+        linha = cur.fetchone()
+    return dict(zip(colunas, linha)) if linha else None
+
+
+def atualizar_projeto(conn, projeto_id, projeto):
+    sql = """
+        UPDATE projetos SET
+            nome = %(nome)s,
+            descricao = %(descricao)s,
+            data = %(data)s
+        WHERE id = %(id)s
+        RETURNING id;
+    """
+    params = {
+        "id": projeto_id,
+        "nome": projeto["nome"],
+        "descricao": projeto.get("descricao"),
+        "data": projeto.get("data"),
+    }
+    with conn.cursor() as cur:
+        cur.execute(sql, params)
+        linha = cur.fetchone()
+    conn.commit()
+    return linha[0] if linha else None
+
+
+def remover_projeto(conn, projeto_id):
+    sql = "DELETE FROM projetos WHERE id = %(id)s RETURNING id;"
+    with conn.cursor() as cur:
+        cur.execute(sql, {"id": projeto_id})
+        linha = cur.fetchone()
+    conn.commit()
+    return linha[0] if linha else None

@@ -30,3 +30,16 @@ CREATE TABLE IF NOT EXISTS usuarios (
     TAG         TEXT[],
     criado_em   TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS projetos (
+    id           SERIAL PRIMARY KEY,
+    nome         TEXT NOT NULL,
+    descricao    TEXT,
+    data_criacao DATE,
+    edital_id    INTEGER NOT NULL,
+    usuario_id   INTEGER NOT NULL,
+    criado_em    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (edital_id) REFERENCES editais(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+
+);
