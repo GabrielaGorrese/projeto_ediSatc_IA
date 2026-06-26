@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { apiFetch } from "../api/client.js";
 import EditalCard, { parseData, statusEdital, CategoriaTag } from "../components/EditalCard.jsx";
 import SideBar from "../components/SideBar.jsx";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import Header from "../components/Header.jsx";
+
 
 const BG_GRADIENT =
   "linear-gradient(180deg, #DCFF7C 0%, #80CC71 12%, #15685A 85%, #14565D 98%)";
@@ -232,25 +233,7 @@ export default function DashboardPage() {
     <div className="flex h-screen overflow-hidden" style={{ background: '#fff' }}>
       <SideBar className="h-full flex-shrink-0"/>
       <main className="flex-1 overflow-y-auto mx-auto w-full max-w-8xl rounded-xl bg-white px-6 py-6 sm:px-10 sm:py-8">
-        <div className="flex items-center gap-20 border-b mb-8 border-[#CCCCCC] pb-4">
-          <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              className="w-full rounded-md border border-[#D3D3D3] bg-white py-2 pl-9 pr-4 text-sm text-[#2C382D] outline-none transition focus:border-[#348953] focus:ring-2 focus:ring-[#348953]/30"
-            />
-          </div>
-
-          <button
-            type="button"
-            aria-label="Perfil"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E3E6EA] transition hover:bg-[#d6dade]"
-          >
-            <UserIcon />
-          </button>
-
-        </div>
+        <Header />
 
         {/*
         {recomendados.length > 0 && (

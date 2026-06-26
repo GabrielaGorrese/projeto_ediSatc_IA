@@ -40,7 +40,7 @@ export default function EditalCard({ edital, novo = false }) {
       }
     >
       <div className="flex items-center justify-between">
-        <span className="flex items-center gap-2 text-sm text-[#313B31]">
+        <span className="flex items-center gap-2 text-xs text-[#313B31]">
           <span
             className={
               "h-2.5 w-2.5 rounded-full " +
@@ -62,7 +62,7 @@ export default function EditalCard({ edital, novo = false }) {
       <div className="mt-3 h-0.5 rounded bg-[#FFA500]" />
 
       <h3 className="mt-4 font-bold leading-snug text-[#2C382D]">{edital.titulo}</h3>
-      <p className="mt-3 text-sm leading-relaxed text-gray-500 line-clamp-3">
+      <p className="mt-3 text-xs leading-relaxed text-gray-500 line-clamp-3">
         {edital.objetivo_principal || "—"}
       </p>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { apiFetch } from "../api/client.js";
+import SideBar from "../components/SideBar.jsx";
 
 const BG_GRADIENT =
   "linear-gradient(180deg, #DCFF7C 0%, #80CC71 12%, #15685A 85%, #14565D 98%)";
@@ -102,11 +103,9 @@ export default function EditalDetalhePage() {
     : [];
 
   return (
-    <div
-      className="min-h-screen w-full p-4 sm:p-8"
-      style={{ background: BG_GRADIENT }}
-    >
-      <main className="mx-auto w-full max-w-5xl rounded-xl bg-white px-6 py-6 shadow-2xl sm:px-12 sm:py-8">
+    <div className="flex h-screen overflow-hidden" style={{ background: '#fff' }}>
+      <SideBar className="h-full flex-shrink-0"/>
+      <main className="flex-1 overflow-y-auto mx-auto w-full max-w-8xl rounded-xl bg-white px-6 py-6 sm:px-10 sm:py-8">
         <div className="flex items-center justify-between border-b border-[#CCCCCC] pb-4">
           <Link
             to="/dashboard"
