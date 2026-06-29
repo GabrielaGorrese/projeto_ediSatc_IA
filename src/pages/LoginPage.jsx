@@ -23,7 +23,7 @@ export default function LoginPage() {
         body: JSON.stringify({ email, senha }),
       });
       localStorage.setItem("usuario", JSON.stringify(usuario));
-      navigate("/dashboard");
+      navigate("/editais-abertos");
     } catch (err) {
       setErro(err.message);
     } finally {

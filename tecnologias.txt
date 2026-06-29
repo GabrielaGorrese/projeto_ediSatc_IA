@@ -16,7 +16,7 @@ React 18
 
 React Router 7
   O que e : Sistema de rotas (navegacao).
-  Por que : Troca de tela (login -> cadastro -> dashboard -> detalhe) sem
+  Por que : Troca de tela (login -> cadastro -> editais-abertos -> detalhe) sem
             recarregar a pagina.
   Onde    : src/main.jsx e os Link/rotas nas paginas
 
@@ -30,7 +30,7 @@ Tailwind CSS 4
   O que e : Framework de estilo via classes utilitarias.
   Por que : Estilizar direto no JSX (className="rounded-md border...") sem
             escrever CSS separado.
-  Onde    : Em todo o DashboardPage.jsx e demais paginas
+  Onde    : Em todo o EditaisAbertos.jsx e demais paginas
 
 Fetch API
   O que e : Funcao nativa do navegador para chamadas HTTP.

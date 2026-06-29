@@ -103,7 +103,7 @@ function RecomendadoCard({ id, titulo, tags }) {
   );
 }
 
-export default function DashboardPage() {
+export default function EditaisAbertos() {
   const [editais, setEditais] = useState([]);
   const [recomendados, setRecomendados] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -116,6 +116,8 @@ export default function DashboardPage() {
   const [buscando, setBuscando] = useState(false);
   const [msgBusca, setMsgBusca] = useState("");
   const [fonte, setFonte] = useState("FAPESC");
+
+  const [busca, setBusca] = useState("");
 
   const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
   const nomeExibido = usuario.email
@@ -188,34 +190,41 @@ export default function DashboardPage() {
     setPagina(1);
   }
 
-  const editaisFiltrados = useMemo(() => {
-    let lista = [...editais];
+const editaisFiltrados = useMemo(() => {
+  let lista = [...editais];
 
-    if (filtroStatus) {
-      lista = lista.filter((e) => statusEdital(e.prazo_final) === filtroStatus);
-    }
+  if (busca.trim()) {
+    const termo = busca.trim().toLowerCase();
+    lista = lista.filter((e) =>
+      e.titulo?.toLowerCase().includes(termo)
+    );
+  }
 
-    if (ordemPrazo) {
-      lista.sort((a, b) => {
-        const da = parseData(a.prazo_final);
-        const db = parseData(b.prazo_final);
-        if (!da && !db) return 0;
-        if (!da) return 1;
-        if (!db) return -1;
-        return ordemPrazo === "asc" ? da - db : db - da;
-      });
-    } else if (ordemOrg) {
-      lista.sort((a, b) => {
-        const oa = a.organizacao || "";
-        const ob = b.organizacao || "";
-        return ordemOrg === "asc"
-          ? oa.localeCompare(ob, "pt-BR")
-          : ob.localeCompare(oa, "pt-BR");
-      });
-    }
+  if (filtroStatus) {
+    lista = lista.filter((e) => statusEdital(e.prazo_final) === filtroStatus);
+  }
 
-    return lista;
-  }, [editais, ordemPrazo, ordemOrg, filtroStatus]);
+  if (ordemPrazo) {
+    lista.sort((a, b) => {
+      const da = parseData(a.prazo_final);
+      const db = parseData(b.prazo_final);
+      if (!da && !db) return 0;
+      if (!da) return 1;
+      if (!db) return -1;
+      return ordemPrazo === "asc" ? da - db : db - da;
+    });
+  } else if (ordemOrg) {
+    lista.sort((a, b) => {
+      const oa = a.organizacao || "";
+      const ob = b.organizacao || "";
+      return ordemOrg === "asc"
+        ? oa.localeCompare(ob, "pt-BR")
+        : ob.localeCompare(oa, "pt-BR");
+    });
+  }
+
+  return lista;
+}, [editais, busca, ordemPrazo, ordemOrg, filtroStatus]);
 
   const idMaisRecente = editais.length
     ? Math.max(...editais.map((e) => e.id))
@@ -233,8 +242,7 @@ export default function DashboardPage() {
     <div className="flex h-screen overflow-hidden" style={{ background: '#fff' }}>
       <SideBar className="h-full flex-shrink-0"/>
       <main className="flex-1 overflow-y-auto mx-auto w-full max-w-8xl rounded-xl bg-white px-6 py-6 sm:px-10 sm:py-8">
-        <Header />
-
+        <Header modo="pesquisa" valorBusca={busca} aoBuscar={setBusca} />
         {/*
         {recomendados.length > 0 && (
           <section className="mt-6 rounded-xl border border-[#CCCCCC] bg-[#FCFCFC] p-6">

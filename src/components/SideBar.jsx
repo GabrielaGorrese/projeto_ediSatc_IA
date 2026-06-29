@@ -23,7 +23,7 @@ export default function SideBar() {
 
           <hr className="my-2 border-white/20" />
 
-          <Link to="/dashboard">
+          <Link to="/editais-abertos">
           <p className="ml-2 mt-3 cursor-pointer text-sm text-white/80 hover:text-white/60">Editais abertos</p>
           </Link>
           <p className="ml-2 mt-1 cursor-pointer text-sm text-white/80 hover:text-white/60">Projetos cadastrados</p>

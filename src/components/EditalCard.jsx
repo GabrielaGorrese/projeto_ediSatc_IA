@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { FolderPlusIcon } from "@heroicons/react/24/solid";
 
 function parseData(valor) {
   if (!valor || valor === "--") return null;
@@ -66,8 +67,15 @@ export default function EditalCard({ edital, novo = false }) {
         {edital.objetivo_principal || "—"}
       </p>
 
-      <div className="mt-auto pt-5">
-        {edital.tag && <CategoriaTag>{edital.tag}</CategoriaTag>}
+      <div className="flex items-center justify-between pt-5">
+        <div>
+          {edital.tag && <CategoriaTag>{edital.tag}</CategoriaTag>}
+        </div>
+        <Link to={`/editais/${edital.id}/cadastrar-projeto`}>
+          <span className="flex items-center gap-1.5 rounded-full bg-[#348953] px-3 py-3 text-[10px] font-bold uppercase tracking-wide text-white">
+            <FolderPlusIcon className="h-4 w-4" />
+          </span>
+        </Link>
       </div>
     </Link>
   );

@@ -133,7 +133,7 @@ projeto_ediSatc_IA/
 ├── src/                        # frontend React
 │   ├── api/client.js           # cliente HTTP para a API
 │   ├── main.jsx                # ponto de entrada
-│   └── pages/                  # telas (login, cadastro, dashboard, detalhe)
+│   └── pages/                  # telas (login, cadastro, editais-abertos, detalhe)
 ├── package.json
 └── vite.config.js
 ```

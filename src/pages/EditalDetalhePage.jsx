@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { apiFetch } from "../api/client.js";
 import SideBar from "../components/SideBar.jsx";
+import Header from "../components/Header.jsx";
 
 const BG_GRADIENT =
   "linear-gradient(180deg, #DCFF7C 0%, #80CC71 12%, #15685A 85%, #14565D 98%)";
@@ -106,15 +107,19 @@ export default function EditalDetalhePage() {
     <div className="flex h-screen overflow-hidden" style={{ background: '#fff' }}>
       <SideBar className="h-full flex-shrink-0"/>
       <main className="flex-1 overflow-y-auto mx-auto w-full max-w-8xl rounded-xl bg-white px-6 py-6 sm:px-10 sm:py-8">
+        <Header modo="voltar" voltarPara="/editais-abertos" />
+
+        {/*
         <div className="flex items-center justify-between border-b border-[#CCCCCC] pb-4">
           <Link
-            to="/dashboard"
+            to="/editais-abertos"
             className="inline-flex items-center gap-2 text-sm font-semibold text-[#348953] hover:underline"
           >
             <span aria-hidden="true">←</span> Voltar para editais
           </Link>
           <span aria-hidden="true" className="h-9 w-9 rounded-full bg-[#D9D9D9]" />
         </div>
+        */}
 
         {carregando && (
           <p className="mt-12 text-center text-gray-500">Carregando edital...</p>
