@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MagnifyingGlassIcon, UserIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { BellIcon } from "@heroicons/react/24/outline";
 
-export default function Header({ modo = "pesquisa", aoBuscar, valorBusca, voltarPara = "/" }) {
+export default function Header({ modo = "pesquisa", aoBuscar, valorBusca, voltarPara }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex items-center gap-20 border-b mb-8 border-[#CCCCCC] pb-4">
       {modo === "pesquisa" ? (
@@ -17,15 +19,15 @@ export default function Header({ modo = "pesquisa", aoBuscar, valorBusca, voltar
           />
         </div>
       ) : (
-        <Link
-          to={voltarPara}
-          className="flex flex-1 items-center gap-2 border border-transparent py-2 text-sm font-semibold text-[#2C382D] transition hover:text-[#348953]"
+        <button
+          type="button"
+          onClick={() => (voltarPara ? navigate(voltarPara) : navigate(-1))}
+          className="cursor-pointer flex flex-1 items-center gap-2 border border-transparent py-2 text-sm font-semibold text-[#2C382D] transition hover:text-[#348953]"
         >
           <ArrowLeftIcon className="h-4 w-4" />
-          Voltar para editais
-        </Link>
+          Voltar
+        </button>
       )}
-
       <div className="flex items-center gap-4">
         <BellIcon className="h-6 w-6 text-gray-500/50 hover:text-gray-500/75" />
         <button
